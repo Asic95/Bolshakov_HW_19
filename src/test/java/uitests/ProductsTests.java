@@ -2,6 +2,7 @@ package uitests;
 
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import uitests.pages.shop_main.Product;
 import uitests.pages.shop_main.ProductPageShop;
@@ -9,6 +10,7 @@ import uitests.pages.shop_main.SortDirection;
 
 import java.util.List;
 
+@Listeners(ScreenshotListener.class)
 public class ProductsTests extends BaseTests {
 
     @DataProvider
@@ -25,7 +27,7 @@ public class ProductsTests extends BaseTests {
     }
 
     @Test(priority = 2, dataProvider = "sortingWays")
-    public void checkSortingTestCustom(String sortingWays) throws InterruptedException {
+    public void checkSorting(String sortingWays) throws InterruptedException {
         ProductPageShop productPageShop = new ProductPageShop();
         productPageShop.extendProductList();
 

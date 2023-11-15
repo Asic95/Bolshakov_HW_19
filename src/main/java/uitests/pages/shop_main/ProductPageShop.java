@@ -1,10 +1,8 @@
 package uitests.pages.shop_main;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.Select;
-import uitests.driver.WebDriverHolder;
 import uitests.pages.BasePage;
 
 import java.util.ArrayList;
@@ -23,11 +21,14 @@ public class ProductPageShop extends BasePage {
     @FindBy(className = "product-count")
     private WebElement countOfProducts;
 
-    @FindBy(css = "div[class='right-block'] a[class='product-name']")
-    private WebElement productName;
+    @FindBy(css = "div[class='product-container'] div[class='right-block'] a[class='product-name']")
+    private List<WebElement> productName;
 
-    @FindBy(css = "div[class='right-block'] div[class='content_price'] span[class='price product-price']")
-    private WebElement productPrice;
+    @FindBy(css = "div[class='product-container'] div[class='right-block'] div[class='content_price'] span[class='price product-price']")
+    private List<WebElement> productPrice;
+
+    @FindBy(css = "div[class='product-container'] div[class='functional-buttons clearfix'] div[class='compare'] a[class='add_to_compare']")
+    private List<WebElement> productID;
 
     public ProductPageShop() {
         super();
@@ -45,21 +46,15 @@ public class ProductPageShop extends BasePage {
 
     public List<Product> getProducts() throws InterruptedException {
         extendProductList();
-        List<WebElement> productItems = WebDriverHolder.getInstance().getDriver().findElements(By.xpath("//div[@class='product-container']"));
         List<Product> productList = new ArrayList<>();
 
-        String xpathProductName = "div[class='right-block'] a[class='product-name']";
-        String xpathProductPrice = "div[class='right-block'] div[class='content_price'] span[class='price product-price']";
-        String xpathProductID = "div[class='functional-buttons clearfix'] div[class='compare'] a[class='add_to_compare']";
+        for (int k = 0; k < productName.size(); k++) {
+            String parsedName = String.valueOf(productName.get(k).getText());
+            String parsedPrice = String.valueOf(productPrice.get(k).getText());
+            Integer parsedID = Integer.valueOf(String.valueOf(productID.get(k).getAttribute("data-id-product")));
 
-        for (WebElement product : productItems) {
-            String parsedName = product.findElement(By.cssSelector(xpathProductName)).getText();
-            String parsedPrice = product.findElement(By.cssSelector(xpathProductPrice)).getText();
-            Integer parsedID = Integer.valueOf(product.findElement(By.cssSelector(xpathProductID)).getAttribute("data-id-product"));
-
-            Double productPrice = Double.parseDouble(parsedPrice.replace("₴", "").replace(",", ".").replace(" ", ""));
+            Double productPrice = Double.valueOf(parsedPrice.replace("₴", "").replace(",", ".").replace(" ", ""));
             Product productModel = new Product().setName(parsedName).setPrice(productPrice).setID(parsedID);
-
             productList.add(productModel);
         }
         return productList;
